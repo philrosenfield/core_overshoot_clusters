@@ -1,0 +1,8 @@
+*full
+*csv
+*dat
+*acs_wfc
+*fits
+*fake
+*.DS*
+*.pyc

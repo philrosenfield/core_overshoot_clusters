@@ -6,13 +6,40 @@ import numpy as np
 logL = 'logL'
 logT = 'logT'
 age = 'age'
-mass = 'mass'
 logg = 'logg'
 CO = 'CO'
 
+track_columns = {
+    'parsec': [age, 'mass', logT, logL, logg, CO],
+
+    'yy': ['model', 'shells', age, 'XCEN', 'YCEN', 'ZCEN', logL, 'logR',
+           logg, logT, 'mcore', 'menvp', 'r_bcz', 'tau_c', 'T_bcz',
+           'X_env', 'Z_env', 'logPc', 'logTc', 'logDc', 'beta', 'eta',
+           'M_Hsh', 'DM_Hsh', 'M_He', 'M_Tmax', 'U_grav', 'I_TOT', 'I_env',
+           'I_core', 'L_ppI', 'L_ppII', 'L_ppIII', 'L_CNO', 'L_3alpha'],
+
+    'mist': [age, logT, logg, logL, 'Z_surf', 'ACS_WFC_F435W',
+             'ACS_WFC_F475W', 'ACS_WFC_F502N', 'ACS_WFC_F550M',
+             'ACS_WFC_F555W', 'ACS_WFC_F606W', 'ACS_WFC_F625W',
+             'ACS_WFC_F658N', 'ACS_WFC_F660N', 'ACS_WFC_F775W',
+             'ACS_WFC_F814W', 'ACS_WFC_F850LP', 'ACS_WFC_F892N', 'phase'],
+
+    'vr': ['model', logL, logT, age, 'HCEN', 'DLdt', 'DTDt'],
+
+    'geneva': [age, logL, logT],
+
+    'dartmouth': [age, logT, logg,  logL, 'ACS_WFC_F435W', 'ACS_WFC_F475W',
+                 'ACS_WFC_F555W', 'ACS_WFC_F606W', 'ACS_WFC_F625W',
+                 'ACS_WFC_F775W', 'ACS_WFC_F814W', 'ACS_WFC_F850L'],
+
+    'basti': [age, 'mass', logL, logT, 'ACS_WFC_F435W', 'ACS_WFC_F475W',
+                 'ACS_WFC_F555W', 'ACS_WFC_F606W', 'ACS_WFC_F625W',
+                 'ACS_WFC_F775W', 'ACS_WFC_F814W']
+    }
+
 class Track(object):
     '''Padova stellar track class.'''
-    def __init__(self, filename):
+    def __init__(self, filename, model='parsec'):
         '''
         load the track
         adds path base, file name and hb (bool) to self.
@@ -20,7 +47,7 @@ class Track(object):
         Parameters
         ----------
         filename : str
-            the path to the PARSEC track file
+            the path to the track file
         '''
         self.base, self.name = os.path.split(filename)
 
@@ -28,9 +55,9 @@ class Track(object):
         if 'hb' in self.name.lower():
             self.hb = True
 
-        self.load_track(filename)
+        self.load_track(filename, model=model)
 
-    def load_track(self, filename):
+    def load_track(self, filename, model='parsec'):
         '''
         load the PARSEC (interpolated for MATCH) tracks into a record array
 
@@ -55,23 +82,24 @@ class Track(object):
             mass : float
                 initial mass of the track (from the first row of data)
         '''
-        def mbol2logl(m):
-            try:
-                logl = (4.77 - float(m)) / 2.5
-            except TypeError:
-                logl = (4.77 - m) / 2.5
-            return logl
+        kw = {}
+        if model == 'parsec':
+            # Mbol to logL
+            kw = {'converters': {3: lambda m: mbol2logl(m)}}
 
-        self.col_keys = [age, mass, logT, logL, logg, CO]
-        with open(filename, 'r') as inp:
-            header = inp.readline()
-            col_keys = header.split()
-            if len(col_keys) > len(self.col_keys):
-                self.col_keys.extend(col_keys[7:])
-
-        data = np.genfromtxt(filename, names=self.col_keys,
-                             converters={3: lambda m: mbol2logl(m)})
-
+        data = np.genfromtxt(filename, names=track_columns[model], **kw)
+        self.col_keys = data.dtype.names
         self.data = data.view(np.recarray)
-        self.mass = self.data[mass][0]
-        return data
+
+        if model == 'parsec':
+            self.mass = data['mass'][0]
+        else:
+            self.mass = float(os.path.split(filename)[1].split('M')[1].replace('.dat', ''))
+
+
+def mbol2logl(m):
+    try:
+        logl = (4.77 - float(m)) / 2.5
+    except TypeError:
+        logl = (4.77 - m) / 2.5
+    return logl

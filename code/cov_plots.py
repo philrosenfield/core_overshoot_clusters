@@ -223,7 +223,8 @@ def cov_complifetimes(track_summary, hb=False, both=False):
     return ax
 
 
-def plot_compare_tracks(Z=0.006, cmd=False):
+def plot_compare_tracks(Z=0.006, cmd=False, colors=None, save=True,
+                        legend=True):
     """
     Plot tracks of different overshooting values.
     If cmd, HB will be smoothed.
@@ -232,10 +233,8 @@ def plot_compare_tracks(Z=0.006, cmd=False):
     w = 21
     p = 1
     if not cmd:
-        zoomb_kw = {'ylim': [1.75, 2.],
-                    'xlim': [3.706, 3.685]}
-        zoomt_kw = {'ylim': [1.5, 2.1],
-                    'xlim': [3.725, 3.685]}
+        zoomb_kw = {'ylim': [1.75, 2.], 'xlim': [3.706, 3.685]}
+        zoomt_kw = {'ylim': [1.5, 2.1], 'xlim': [3.725, 3.685]}
         xlim = [4.04, 3.66]
         ylim = [0.8, 2.5]
         ylabel = r'$\log L\ \rm{(L_\odot)}$'
@@ -245,13 +244,10 @@ def plot_compare_tracks(Z=0.006, cmd=False):
         reversey = False
         ext = 'dat'
     else:
-        zoomb_kw = {'ylim': [0.8, 1.15],
-                    'xlim': [1.4, 1.54]}
-        zoomt_kw = {'ylim': [0.5, 1.5],
-                    'xlim': [1.28, 1.5]}
+        zoomb_kw = {'ylim': [0.8, 1.15], 'xlim': [1.4, 1.54]}
+        zoomt_kw = {'ylim': [0.5, 1.5], 'xlim': [1.28, 1.5]}
         ylim = [2.85, -1.5]
         xlim = [-0.15, 1.65]
-
         ylabel = r'$\rm{F475W}$'
         xlabel = r'$\rm{F475W-F814W}$'
         xs = [0.3, 0.1]
@@ -260,8 +256,17 @@ def plot_compare_tracks(Z=0.006, cmd=False):
         ext = 'acs_wfc'
 
     cov_strs = ['OV0.3', 'OV0.4', 'OV0.5', 'OV0.6']
+    alpha = 1.
+    if colors is not None:
+        if not isinstance(colors, list):
+            cols = [colors] * len(cov_strs)
+            alpha = 0.3
+        else:
+            cols = colors
+    else:
+        cols = ['darkred', 'orange', 'darkgreen', 'navy', 'purple']
+
     masses = [1.5, 2.]
-    cols = ['darkred', 'orange', 'darkgreen', 'navy', 'purple']
     tracks = []
     for cov in cov_strs:
         for mass in masses:
@@ -287,7 +292,10 @@ def plot_compare_tracks(Z=0.006, cmd=False):
             y = t.data['F475W']
 
         cov_str = t.base.split('OV')[1].split('_')[0]
-        label = (r'$\Lambda_c=%s$' % cov_str).replace('OV', '')
+        label = None
+        if legend:
+            label = (r'$\Lambda_c=%s$' % cov_str).replace('OV', '')
+
         icol, = [i for i, c in enumerate(cov_strs) if cov_str in c]
 
         if t.mass == masses[0]:
@@ -295,27 +303,28 @@ def plot_compare_tracks(Z=0.006, cmd=False):
             ax = axhbb
             # add label once (first mass, not hb)
             if t.hb:
-                axm.plot(x[200:], y[200:], color=cols[icol])
+                axm.plot(x[200:], y[200:], color=cols[icol], alpha=alpha)
             else:
-                axm.plot(x[200:], y[200:], label=label, color=cols[icol])
+                axm.plot(x[200:], y[200:], label=label, color=cols[icol],
+                         alpha=alpha)
         else:
-            axm.plot(x[200:], y[200:], color=cols[icol])
+            axm.plot(x[200:], y[200:], color=cols[icol], alpha=alpha)
             # plot hb on upper inset
             ax = axhbt
 
         if t.hb:
             if cmd:
                 ax.plot(savgol_filter(x, w, p), savgol_filter(y, w, p),
-                        color=cols[icol])
+                        color=cols[icol], alpha=alpha)
             else:
-                ax.plot(x, y, color=cols[icol])
+                ax.plot(x, y, color=cols[icol], alpha=alpha)
         else:
             if cmd:
                 ax.plot(savgol_filter(x[1130:], w, p),
                         savgol_filter(y[1130:], w, p),
-                        color=cols[icol])
+                        color=cols[icol], alpha=alpha)
             else:
-                ax.plot(x[1130:], y[1130:], color=cols[icol])
+                ax.plot(x[1130:], y[1130:], color=cols[icol], alpha=alpha)
 
     for ax, m in zip([axhbb, axhbt], masses):
         ax.text(0.9, 0.01, '${}M_\odot$'.format(m), transform=ax.transAxes,
@@ -335,13 +344,88 @@ def plot_compare_tracks(Z=0.006, cmd=False):
     axm.set_ylim(ylim)
 
     axm.tick_params(labelsize=16)
-    axm.legend(loc=0, frameon=False, fontsize=16)
+    if legend:
+        axm.legend(loc=0, frameon=False, fontsize=16)
 
     axhbt.set_title('$Z={}$'.format(Z), fontsize=20)
 
-    outfile = 'COV_HRD'
-    if cmd:
-        outfile = 'COV_CMD'
+    if save:
+        outfile = 'COV_HRD'
+        if cmd:
+            outfile = 'COV_CMD'
+        plt.savefig(outfile + FIGEXT)
+        print('wrote {0:s}'.format(outfile + FIGEXT))
+    return fig, (axm, axhbt, axhbb)
+
+
+model_meta = {'mist': {'loc': 'MIST_Z0.00581867_Y0.2577',
+                       'label': r'$\rm{MIST}$',
+                       'color': '#e66101',
+                       'ls': '-'},
+              'basti': {'loc': 'BST_Z0.004_Y0.251',
+                        'label': r'$\rm{BaSTI con.}$',
+                        'color': 'red',
+                        'ls': '-'},
+              'basti_ov': {'loc': 'BST_OV_Z0.004_Y0.251',
+                           'label': r'$\rm{BaSTI non con.}$',
+                           'color': 'blue',
+                           'ls': '--'},
+              'dartmouth': {'loc': 'DSEP_Z0.006_Y0.254',
+                            'label': r'$\rm{Dartmouth}$',
+                            'color': '#2166ac',
+                            'ls': '-'},
+              'geneva': {'loc': 'GENS_Z0.004_Y0.25',
+                         'label': r'$\rm{Geneva}$',
+                         'color': 'gold',
+                         'ls': '-'},
+              'geneva_rot': {'loc': 'GENR_Z0.004_Y0.25',
+                             'label': r'$\rm{Geneva\ rot.}$',
+                             'color': 'gold',
+                             'ls': '--'},
+              'vr': {'loc': 'VR_Z0.006_Y0.247',
+                     'label': r'$\rm{VR}$',
+                     'color': '#1b7837',
+                     'ls': '-'},
+              'yy': {'loc': 'YY_Z0.005416_Y0.25',
+                     'label': r'$\rm{Y}^2$',
+                     'color': '#5e3c99',
+                     'ls': '-'}
+              }
+
+def add_models():
+    #models = list(model_meta.keys())
+    models = ['mist', 'vr', 'yy', 'dartmouth']
+    fig, (axm, axhbt, axhbb) = plot_compare_tracks(colors='grey', save=False,
+                                                   legend=False)
+    masses = [1.5, 2.0]
+    for i, model in enumerate(models):
+        for j, mass in enumerate(masses):
+            track_dir = os.path.join(TRACKS_LOC, model_meta[model]['loc'])
+            track_name = get_files(track_dir, '*M{:.1f}*'.format(mass))
+            color = model_meta[model]['color']
+            label = model_meta[model]['label']
+            tracks = [Track(t, model=model.split('_')[0]) for t in track_name]
+            for k, track in enumerate(tracks):
+                x = track.data['logT']
+                y = track.data['logL']
+                if j == 0 and k == 0:
+                    # if first mass and first track, label it.
+                    axm.plot(x, y, label=label, color=color, lw=2)
+                else:
+                    axm.plot(x, y, color=color, lw=2)
+
+                # first mass goes on the bottom inset
+                ax = axhbb
+                if j == 1:
+                    ax = axhbt
+                ax.plot(x, y, color=color, lw=2)
+
+    axhbt.set_xlim(3.73, axhbt.get_xlim()[1])
+    axhbb.set_xlim(3.713, axhbb.get_xlim()[1])
+    axm.set_xlim(4.06, axm.get_xlim()[1])
+    handles, labels = axm.get_legend_handles_labels()
+    il = [i for i, l in enumerate(labels) if not 'logL' in l]
+    axm.legend(np.array(handles)[il], np.array(labels)[il], loc=0, fontsize=16)
+    outfile = 'COV_HRD_extra'
     plt.savefig(outfile + FIGEXT)
     print('wrote {0:s}'.format(outfile + FIGEXT))
-    return

@@ -10,13 +10,21 @@ logg = 'logg'
 CO = 'CO'
 
 track_columns = {
-    'parsec': [age, 'mass', logT, logL, logg, CO],
+    'parsec': [age, 'mass', logT, logL, logg, CO, 'mbol', 'ACS_WFC_F435W',
+               'ACS_WFC_F475W', 'ACS_WFC_F550M', 'ACS_WFC_F555W',
+               'ACS_WFC_F606W', 'ACS_WFC_F625W', 'ACS_WFC_F658N',
+               'ACS_WFC_F660N', 'ACS_WFC_F775W', 'ACS_WFC_F814W',
+               'ACS_WFC_F850LP', 'ACS_WFC_F892N'],
 
     'yy': ['model', 'shells', age, 'XCEN', 'YCEN', 'ZCEN', logL, 'logR',
            logg, logT, 'mcore', 'menvp', 'r_bcz', 'tau_c', 'T_bcz',
            'X_env', 'Z_env', 'logPc', 'logTc', 'logDc', 'beta', 'eta',
            'M_Hsh', 'DM_Hsh', 'M_He', 'M_Tmax', 'U_grav', 'I_TOT', 'I_env',
-           'I_core', 'L_ppI', 'L_ppII', 'L_ppIII', 'L_CNO', 'L_3alpha'],
+           'I_core', 'L_ppI', 'L_ppII', 'L_ppIII', 'L_CNO', 'L_3alpha', 'mass',
+           'mbol', 'ACS_WFC_F435W', 'ACS_WFC_F475W', 'ACS_WFC_F550M',
+           'ACS_WFC_F555W', 'ACS_WFC_F606W', 'ACS_WFC_F625W', 'ACS_WFC_F658N',
+           'ACS_WFC_F660N', 'ACS_WFC_F775W', 'ACS_WFC_F814W', 'ACS_WFC_F850LP',
+           'ACS_WFC_F892N'],
 
     'mist': [age, logT, logg, logL, 'Z_surf', 'ACS_WFC_F435W',
              'ACS_WFC_F475W', 'ACS_WFC_F502N', 'ACS_WFC_F550M',
@@ -24,17 +32,15 @@ track_columns = {
              'ACS_WFC_F658N', 'ACS_WFC_F660N', 'ACS_WFC_F775W',
              'ACS_WFC_F814W', 'ACS_WFC_F850LP', 'ACS_WFC_F892N', 'phase'],
 
-    'vr': ['model', logL, logT, age, 'HCEN', 'DLdt', 'DTDt'],
-
-    'geneva': [age, logL, logT],
+    'vr': ['model', logL, logT, age, 'HCEN', 'DLdt', 'DTDt', 'mass',
+           'mbol', 'ACS_WFC_F435W', 'ACS_WFC_F475W', 'ACS_WFC_F550M',
+           'ACS_WFC_F555W', 'ACS_WFC_F606W', 'ACS_WFC_F625W', 'ACS_WFC_F658N',
+           'ACS_WFC_F660N', 'ACS_WFC_F775W', 'ACS_WFC_F814W', 'ACS_WFC_F850LP',
+           'ACS_WFC_F892N'],
 
     'dartmouth': [age, logT, logg,  logL, 'ACS_WFC_F435W', 'ACS_WFC_F475W',
                  'ACS_WFC_F555W', 'ACS_WFC_F606W', 'ACS_WFC_F625W',
                  'ACS_WFC_F775W', 'ACS_WFC_F814W', 'ACS_WFC_F850L'],
-
-    'basti': [age, 'mass', logL, logT, 'ACS_WFC_F435W', 'ACS_WFC_F475W',
-                 'ACS_WFC_F555W', 'ACS_WFC_F606W', 'ACS_WFC_F625W',
-                 'ACS_WFC_F775W', 'ACS_WFC_F814W']
     }
 
 class Track(object):

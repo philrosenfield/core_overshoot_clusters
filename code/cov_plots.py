@@ -242,7 +242,6 @@ def plot_compare_tracks(Z=0.006, cmd=False, colors=None, save=True,
         xs = [3.9, 4.]
         ys = [1.27, 1.75]
         reversey = False
-        ext = 'dat'
     else:
         zoomb_kw = {'ylim': [0.8, 1.15], 'xlim': [1.4, 1.54]}
         zoomt_kw = {'ylim': [0.5, 1.5], 'xlim': [1.28, 1.5]}
@@ -253,7 +252,6 @@ def plot_compare_tracks(Z=0.006, cmd=False, colors=None, save=True,
         xs = [0.3, 0.1]
         ys = [1.75, 0.3]
         reversey = True
-        ext = 'acs_wfc'
 
     cov_strs = ['OV0.3', 'OV0.4', 'OV0.5', 'OV0.6']
     alpha = 1.
@@ -271,7 +269,7 @@ def plot_compare_tracks(Z=0.006, cmd=False, colors=None, save=True,
     for cov in cov_strs:
         for mass in masses:
             track_dir, = get_dirs(TRACKS_LOC, criteria='%s_Z%g_' % (cov, Z))
-            track_name = get_files(track_dir, '*M{:.2f}*{:s}'.format(mass, ext))
+            track_name = get_files(track_dir, '*M{:.2f}*acs_wfc'.format(mass))
             track = Track(track_name[0])
             if len(track_name) > 1:
                 # slap the PMS and HB tracks together...
@@ -288,8 +286,8 @@ def plot_compare_tracks(Z=0.006, cmd=False, colors=None, save=True,
             x = t.data['logT']
             y = t.data['logL']
         else:
-            x = t.data['F475W'] - t.data['F814W']
-            y = t.data['F475W']
+            x = t.data['ACS_WFC_F475W'] - t.data['ACS_WFC_F814W']
+            y = t.data['ACS_WFC_F475W']
 
         cov_str = t.base.split('OV')[1].split('_')[0]
         label = None
@@ -358,56 +356,36 @@ def plot_compare_tracks(Z=0.006, cmd=False, colors=None, save=True,
     return fig, (axm, axhbt, axhbb)
 
 
-model_meta = {'mist': {'loc': 'MIST_Z0.00581867_Y0.2577',
-                       'label': r'$\rm{MIST}$',
-                       'color': '#e66101',
-                       'ls': '-'},
-              'basti': {'loc': 'BST_Z0.004_Y0.251',
-                        'label': r'$\rm{BaSTI con.}$',
-                        'color': 'red',
-                        'ls': '-'},
-              'basti_ov': {'loc': 'BST_OV_Z0.004_Y0.251',
-                           'label': r'$\rm{BaSTI non con.}$',
-                           'color': 'blue',
-                           'ls': '--'},
-              'dartmouth': {'loc': 'DSEP_Z0.006_Y0.254',
-                            'label': r'$\rm{Dartmouth}$',
-                            'color': '#2166ac',
-                            'ls': '-'},
-              'geneva': {'loc': 'GENS_Z0.004_Y0.25',
-                         'label': r'$\rm{Geneva}$',
-                         'color': 'gold',
-                         'ls': '-'},
-              'geneva_rot': {'loc': 'GENR_Z0.004_Y0.25',
-                             'label': r'$\rm{Geneva\ rot.}$',
-                             'color': 'gold',
-                             'ls': '--'},
-              'vr': {'loc': 'VR_Z0.006_Y0.247',
-                     'label': r'$\rm{VR}$',
-                     'color': '#1b7837',
-                     'ls': '-'},
-              'yy': {'loc': 'YY_Z0.005416_Y0.25',
-                     'label': r'$\rm{Y}^2$',
-                     'color': '#5e3c99',
-                     'ls': '-'}
-              }
+model_pltkw = {'mist': {'label': r'$\rm{MIST}$',
+                       'color': '#e66101'},
+              'dartmouth': {'label': r'$\rm{Dartmouth}$',
+                            'color': '#2166ac'},
+              'vr': {'label': r'$\rm{Victoria-Regina}$',
+                     'color': '#1b7837'},
+              'yy': {'label': r'$\rm{YaPSI}$',
+                     'color': '#5e3c99'}}
 
-def add_models():
-    #models = list(model_meta.keys())
-    models = ['mist', 'vr', 'yy', 'dartmouth']
+
+def add_models(cmd=False):
+    models = list(model_pltkw.keys())
     fig, (axm, axhbt, axhbb) = plot_compare_tracks(colors='grey', save=False,
-                                                   legend=False)
+                                                   legend=False, cmd=cmd)
     masses = [1.5, 2.0]
     for i, model in enumerate(models):
         for j, mass in enumerate(masses):
-            track_dir = os.path.join(TRACKS_LOC, model_meta[model]['loc'])
+            track_dir = os.path.join(TRACKS_LOC, model)
             track_name = get_files(track_dir, '*M{:.1f}*'.format(mass))
-            color = model_meta[model]['color']
-            label = model_meta[model]['label']
+            color = model_pltkw[model]['color']
+            label = model_pltkw[model]['label']
             tracks = [Track(t, model=model.split('_')[0]) for t in track_name]
-            for k, track in enumerate(tracks):
-                x = track.data['logT']
-                y = track.data['logL']
+            for k, t in enumerate(tracks):
+                if not cmd:
+                    x = t.data['logT']
+                    y = t.data['logL']
+                else:
+                    x = t.data['ACS_WFC_F475W'] - t.data['ACS_WFC_F814W']
+                    y = t.data['ACS_WFC_F475W']
+
                 if j == 0 and k == 0:
                     # if first mass and first track, label it.
                     axm.plot(x, y, label=label, color=color, lw=2)
@@ -420,12 +398,21 @@ def add_models():
                     ax = axhbt
                 ax.plot(x, y, color=color, lw=2)
 
-    axhbt.set_xlim(3.73, axhbt.get_xlim()[1])
-    axhbb.set_xlim(3.713, axhbb.get_xlim()[1])
-    axm.set_xlim(4.06, axm.get_xlim()[1])
+    if not cmd:
+        # a bit more room needed for HB tracks and ZAMS
+        axhbt.set_xlim(3.73, axhbt.get_xlim()[1])
+        axhbb.set_xlim(3.713, axhbb.get_xlim()[1])
+        axm.set_xlim(4.06, axm.get_xlim()[1])
+    else:
+        axm.set_ylim(3.0, axm.get_ylim()[1])
+    # Hack: y is inexplicably added as a label in plot_compare_tracks
     handles, labels = axm.get_legend_handles_labels()
-    il = [i for i, l in enumerate(labels) if not 'logL' in l]
-    axm.legend(np.array(handles)[il], np.array(labels)[il], loc=0, fontsize=16)
+    il = [i for i, l in enumerate(labels)
+          if not 'logL' in l and not 'F475W' in l]
+    axm.legend(np.array(handles)[il], np.array(labels)[il], loc=2, fontsize=16)
+
     outfile = 'COV_HRD_extra'
+    if cmd:
+        outfile = 'COV_CMD_extra'
     plt.savefig(outfile + FIGEXT)
     print('wrote {0:s}'.format(outfile + FIGEXT))

@@ -1,27 +1,21 @@
-# To do:
-1. Get the tracks
-1. Get all the phot files, correct .gst to have crowd=1.3
-
 # Constraining Core Overshooting with LMC Clusters
 
 This repository holds the codes and data products to reproduce the figures and the open-source aspects of the analysis of the paper Rosenfield et al 2017 (MATCH and PARSEC are closed-source, only their data products are available here).
 
-This repo is designed for two uses:
-1. Use full data products for other purposes.
-1. Produce the figures from the paper.
+This repo is designed to reproduce the figures from the paper. The full grid of core overshooting tracks is available elsewhere.
 
 ## Code:
 * codebase: graphics and analysis used in the paper. For an intermediate python user, these codes can be generalized to other tracks in the repo, or forked/used for other projects.
 
 ## Data products:
 * Photometry related (for each cluster)
-   * Reduced HST observations: `.phot`, `.st`, and `.gst` catalogs
+   * Reduced HST observations: `.gst` catalogs
    * Artificial star tests files
    * `ASteCA` membership probabilities calculated from the `.gst` catalogs
 
 
 * Stellar model related
-  * `PARSEC V1.2S` core overshooting grid
+  * Part of the `PARSEC V1.2S` core overshooting grid
   * Synthetic stellar populations created from `MATCH.fake` for use in the paper
 
 

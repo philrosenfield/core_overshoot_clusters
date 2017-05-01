@@ -32,11 +32,11 @@ Figure 1 and 2 are not included. To make the rest of the figures run `bash all_p
   * main code: `code/cmd_plots.cmd_plots`
   * make the figure: `python -m clusters_data.code.cmds`
 * Figure 4: The effect of core overshooting on H and He burning lifetimes as a function stellar mass.
-  * data: `stev/tracks/track_summary.dat`
+  * data: `stev/track_summary.dat`
   * main code: `cov_plots.cov_complifetimes`
   * make the figure: `python -m clusters_data.code.covs -l`
 * Figure 5: HRD and CMD of tracks as a function of core overshooting
-  * data: `stev/tracks/...`
+  * data: `stev/...`
   * main code: `cov_plots.plot_compare_tracks`
   * make the figure: `python -m clusters_data.code.covs -t`
 * Figure 6: CMDs of synthetic stellar populations (mock data)

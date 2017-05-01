@@ -2,7 +2,7 @@
 
 This repository holds the codes and data products to reproduce the figures and the open-source aspects of the analysis of the paper Rosenfield et al 2017 (MATCH and PARSEC are closed-source, only their data products are available here).
 
-This repo is designed to reproduce the figures from the paper. The full grid of core overshooting tracks is available elsewhere.
+This repo is designed to reproduce the figures from the paper. The full grid of core overshooting tracks is available here: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.570192.svg)](https://doi.org/10.5281/zenodo.570192).
 
 ## Code:
 * codebase: graphics and analysis used in the paper. For an intermediate python user, these codes can be generalized to other tracks in the repo, or forked/used for other projects.

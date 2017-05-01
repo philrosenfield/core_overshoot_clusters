@@ -1,0 +1,133 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>core_overshoot_clusters by philrosenfield</title>
+
+    <link rel="stylesheet" href="/core_overshoot_clusters/assets/css/style.css?v=081085c4048d818b58390edb5f5893678225e97e">
+    <meta name="viewport" content="width=device-width">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>core_overshoot_clusters</h1>
+        <p>Codes and data for figure reproduction</p>
+
+        
+          <p class="view"><a href="https://github.com/philrosenfield/core_overshoot_clusters">View the Project on GitHub <small></small></a></p>
+        
+
+        
+
+        
+      </header>
+      <section>
+
+      <h1 id="constraining-core-overshooting-with-lmc-clusters">Constraining Core Overshooting with LMC Clusters</h1>
+
+<p>This repository holds the codes and data products to reproduce the figures and the open-source aspects of the analysis of the paper Rosenfield et al 2017 (MATCH and PARSEC are closed-source, only their data products are available here).</p>
+
+<p>This repo is designed to reproduce the figures from the paper. The full grid of core overshooting tracks is available elsewhere.</p>
+
+<h2 id="code">Code:</h2>
+<ul>
+  <li>codebase: graphics and analysis used in the paper. For an intermediate python user, these codes can be generalized to other tracks in the repo, or forked/used for other projects.</li>
+</ul>
+
+<h2 id="data-products">Data products:</h2>
+<ul>
+  <li>Photometry related (for each cluster)
+    <ul>
+      <li>Reduced HST observations: <code class="highlighter-rouge">.gst</code> catalogs</li>
+      <li>Artificial star tests files</li>
+      <li><code class="highlighter-rouge">ASteCA</code> membership probabilities calculated from the <code class="highlighter-rouge">.gst</code> catalogs</li>
+    </ul>
+  </li>
+  <li>Stellar model related
+    <ul>
+      <li>Part of the <code class="highlighter-rouge">PARSEC V1.2S</code> core overshooting grid</li>
+      <li>Synthetic stellar populations created from <code class="highlighter-rouge">MATCH.fake</code> for use in the paper</li>
+    </ul>
+  </li>
+  <li>Files used to create posterior distribution functions
+    <ul>
+      <li>likelihood files from synthetic stellar populations</li>
+      <li>likelihood files from 70% membership probability catalogs (for each cluster)</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="making-the-figures-from-the-paper">Making the Figures from the Paper</h2>
+<p>Figure 1 and 2 are not included. To make the rest of the figures run <code class="highlighter-rouge">bash all_plots.sh</code></p>
+
+<h3 id="figure-by-figure">Figure-by-Figure</h3>
+<ul>
+  <li>Figure 3: CMDs of the clusters.
+    <ul>
+      <li>data: <code class="highlighter-rouge">phot/obs/*gst</code> and <code class="highlighter-rouge">phot/asteca/*dat</code></li>
+      <li>main code: <code class="highlighter-rouge">code/cmd_plots.cmd_plots</code></li>
+      <li>make the figure: <code class="highlighter-rouge">python -m clusters_data.code.cmds</code></li>
+    </ul>
+  </li>
+  <li>Figure 4: The effect of core overshooting on H and He burning lifetimes as a function stellar mass.
+    <ul>
+      <li>data: <code class="highlighter-rouge">stev/tracks/track_summary.dat</code></li>
+      <li>main code: <code class="highlighter-rouge">cov_plots.cov_complifetimes</code></li>
+      <li>make the figure: <code class="highlighter-rouge">python -m clusters_data.code.covs -l</code></li>
+    </ul>
+  </li>
+  <li>Figure 5: HRD and CMD of tracks as a function of core overshooting
+    <ul>
+      <li>data: <code class="highlighter-rouge">stev/tracks/...</code></li>
+      <li>main code: <code class="highlighter-rouge">cov_plots.plot_compare_tracks</code></li>
+      <li>make the figure: <code class="highlighter-rouge">python -m clusters_data.code.covs -t</code></li>
+    </ul>
+  </li>
+  <li>Figure 6: CMDs of synthetic stellar populations (mock data)
+    <ul>
+      <li>data: <code class="highlighter-rouge">mock/*full</code></li>
+      <li>main code: <code class="highlighter-rouge">cov_plots.fake_cmds</code></li>
+      <li>make the figure: <code class="highlighter-rouge">python -m clusters_data.code.covs -m</code></li>
+    </ul>
+  </li>
+  <li>Figure 7+: PDF plots (marginalized or joint-marginalized)
+    <ul>
+      <li>data:
+        <ul>
+          <li>Fig 7, 8: <code class="highlighter-rouge">pdfs/mock/</code></li>
+          <li>Fig 9+: <code class="highlighter-rouge">pdfs/clusters/</code></li>
+        </ul>
+      </li>
+      <li>main code: <code class="highlighter-rouge">pdf_plots.cluster_result_plots</code></li>
+      <li>make the figures:
+        <ul>
+          <li>Fig 7, 8: <code class="highlighter-rouge">python -m clusters_data.code.pdfs -t</code></li>
+          <li>Fig 9, 10: <code class="highlighter-rouge">python -m clusters_data.code.pdfs -m</code></li>
+          <li>Fig 11, 12: <code class="highlighter-rouge">python -m clusters_data.code.pdfs</code></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+
+      </section>
+      <footer>
+        
+        <p>This project is maintained by <a href="https://github.com/philrosenfield">philrosenfield</a></p>
+        
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="/core_overshoot_clusters/assets/js/scale.fix.js"></script>
+
+
+  
+  </body>
+</html>
+
+

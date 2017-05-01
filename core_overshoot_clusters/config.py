@@ -1,16 +1,22 @@
+"""
+configuration realated parameters. File locations, figure extensions,
+label strings, etc
+"""
 import os
+
 FIGEXT = '.pdf'
 
 base = os.path.split(os.path.split(__file__)[0])[0]
 
 ASTECA_LOC = os.path.join(base, 'phot', 'asteca')
 PHOT_LOC = os.path.join(base, 'phot', 'obs')
-TRACKS_LOC = os.path.join(base, 'stev', 'tracks')
+TRACKS_LOC = os.path.join(base, 'stev')
 MOCK_LOC = os.path.join(base, 'mock')
-PDF_LOC =  os.path.join(base, 'pdfs')
+PDF_LOC = os.path.join(base, 'pdfs')
 
 for d in [ASTECA_LOC, PHOT_LOC, TRACKS_LOC, MOCK_LOC, PDF_LOC]:
-    assert os.path.isdir(d), 'directory {} not found, check config.py'.format(d)
+    assert os.path.isdir(
+        d), 'directory {} not found, check config.py'.format(d)
 
 
 def key2label(string, gyr=False):

@@ -4,5 +4,5 @@ try:
     plt.style.use('presentation')
     sns.set_style('ticks')
     sns.set_context('paper', font_scale=1.5)
-except:
+except ImportError:
     pass

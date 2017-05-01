@@ -1,6 +1,8 @@
 """Stats and visualization of calcsfh -ssp runs"""
-from __future__ import print_function, absolute_import
+from __future__ import absolute_import, print_function
+
 import os
+
 import numpy as np
 import pandas as pd
 
@@ -16,7 +18,7 @@ def get_absprob(data):
 def quantiles(ux, prob, qs=[0.16, 0.84], res=200, maxp=False,
               ax=None, k=3):
     """
-    Calculate quantiles, or lines at qs fraction of total area under prob curve.
+    Calculate quantiles, or lines at qs fraction of total area under the curve.
 
     Parameters
     ----------
@@ -49,6 +51,7 @@ def quantiles(ux, prob, qs=[0.16, 0.84], res=200, maxp=False,
         # useful for debugging or by-eye checking of interpolation
         ax.plot(iux, iprob, color='r')
     return g
+
 
 def fitgauss1D(ux, prob):
     """Fit a 1D Gaussian to a marginalized probability
@@ -162,6 +165,7 @@ class SSP(object):
     """
     Class for calcsfh -ssp outputs
     """
+
     def __init__(self, filename=None, data=None, filterby=None, gyr=False):
         """
         filenames are the calcsfh -ssp terminal or console output.
@@ -184,7 +188,9 @@ class SSP(object):
                 # Perhaps this should split into a dict instead of culling...
                 for key, val in filterby.items():
                     if len(np.nonzero(data[key] == val)[0]) == 0:
-                        print('can not filter by {0:s}={1:g}: no matching values'.format(key, val))
+                        print(
+                            'can not filter by {0:s}={1:g}: no matching values'
+                            .format(key, val))
                         print('available values:', np.unique(data[key]))
                         import sys
                         sys.exit(1)
@@ -195,7 +201,8 @@ class SSP(object):
     def uniq_grid(self, skip_cols=None):
         """call unique_ on all columns."""
         skip_cols = skip_cols or ['None']
-        cols = [c for c in self.data.columns if c not in skip_cols or 'prob' in c]
+        cols = [c for c in self.data.columns
+                if c not in skip_cols or 'prob' in c]
         [self.unique_(c) for c in cols]
 
     def _getmarginals(self, avoid_list=['fit']):
@@ -207,7 +214,7 @@ class SSP(object):
         return marg_[inds]
 
     def load_ssp(self, filename):
-        """call pd.read_csv add file base, name to self"""
+        """read table add file base, name to self"""
         self.base, self.name = os.path.split(filename)
         return pd.read_csv(filename)
 
@@ -231,7 +238,7 @@ class SSP(object):
                   ax=None, k=3):
         """Add quantiles, see quantiles"""
         g = quantiles(ux, prob, qs=qs, res=res, maxp=maxp, ax=ax,
-                            k=k)
+                      k=k)
         self.__setattr__('{0:s}g'.format(xattr), g)
         return g
 
@@ -279,7 +286,7 @@ class SSP(object):
         if not self._haskey('absprob'):
             self.data = get_absprob(self.data)
 
-        z = self.data.absprob
+        z = self.data['absprob']
         x = self.data[xattr]
         ux = self.unique_(xattr)
 

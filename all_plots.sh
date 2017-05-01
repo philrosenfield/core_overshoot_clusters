@@ -1,11 +1,11 @@
 # CMDs of gst and asteca membership catalogs
-python -m core_overshoot_clusters.code.cmds
+pythonw -m core_overshoot_clusters.cmds
 # Core overshooting tracks HRD, CMD (-t),
 # Lifetime comparisons (-l),
 # Synthetic cmds (-m),
 # Core overshooting tracks HRD, CMD with different modelling groups (-s)
-python -m core_overshoot_clusters.code.covs -mlts
+pythonw -m core_overshoot_clusters.covs -mlts
 # PDFs of clusters, marginalized over 0.5 Hp overshooting (--ov5), and mock data (-t)
-python -m core_overshoot_clusters.code.pdfs -t
-python -m core_overshoot_clusters.code.pdfs --ov5
-python -m core_overshoot_clusters.code.pdfs
+pythonw -m core_overshoot_clusters.pdfs -t
+pythonw -m core_overshoot_clusters.pdfs --ov5
+pythonw -m core_overshoot_clusters.pdfs

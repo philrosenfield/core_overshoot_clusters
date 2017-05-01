@@ -1,5 +1,6 @@
-'''Class to read Padova tracks'''
+'''Class to read stellar tracks'''
 import os
+
 import numpy as np
 
 # column names
@@ -39,12 +40,14 @@ track_columns = {
            'ACS_WFC_F892N'],
 
     'dartmouth': [age, logT, logg,  logL, 'ACS_WFC_F435W', 'ACS_WFC_F475W',
-                 'ACS_WFC_F555W', 'ACS_WFC_F606W', 'ACS_WFC_F625W',
-                 'ACS_WFC_F775W', 'ACS_WFC_F814W', 'ACS_WFC_F850L'],
-    }
+                  'ACS_WFC_F555W', 'ACS_WFC_F606W', 'ACS_WFC_F625W',
+                  'ACS_WFC_F775W', 'ACS_WFC_F814W', 'ACS_WFC_F850L'],
+}
+
 
 class Track(object):
     '''Padova stellar track class.'''
+
     def __init__(self, filename, model='parsec'):
         '''
         load the track
@@ -100,7 +103,8 @@ class Track(object):
         if model == 'parsec':
             self.mass = data['mass'][0]
         else:
-            self.mass = float(os.path.split(filename)[1].split('M')[1].replace('.dat', ''))
+            self.mass = float(os.path.split(filename)[
+                              1].split('M')[1].replace('.dat', ''))
 
 
 def mbol2logl(m):

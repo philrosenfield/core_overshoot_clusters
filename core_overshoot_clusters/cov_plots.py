@@ -1,3 +1,4 @@
+"""Supporting functions for core overshooting plots"""
 import argparse
 import os
 import sys
@@ -17,7 +18,7 @@ from .utils import get_files, get_dirs
 
 def _joint_plot(size=8, ratio=5, space=0.2):
     """
-    Hack edits of seaborn.JointGrid so I can access side panel histograms mpl
+    Hack edits of seaborn.JointGrid so to access side panel histograms mpl
     style.
     """
     f = plt.figure(figsize=(size, size))
@@ -42,7 +43,7 @@ def fake_cmds(phots, space=0.2):
     # histogram binning
     try:
         from seaborn.distributions import _freedman_diaconis_bins
-    except:
+    except ImportError:
         def _freedman_diaconis_bins(arr):
             return 100
 
@@ -57,12 +58,12 @@ def fake_cmds(phots, space=0.2):
     ax_marg_xs = [ax_marg_x7, ax_marg_x8, ax_marg_x9]
     ax_marg_ys = [ax_marg_y7, ax_marg_y8, ax_marg_y9]
     # set up summary figure
-    f, ax = plt.subplots(figsize=(8,8))
+    f, ax = plt.subplots(figsize=(8, 8))
 
     for p in phots:
         icov, = [j for j, c in enumerate(cov_strs) if c.lower() in p]
 
-        m1, m2 = np.loadtxt(p, unpack=True, usecols=(0,1))
+        m1, m2 = np.loadtxt(p, unpack=True, usecols=(0, 1))
         col = m1 - m2
 
         # axes limits for oldest population
@@ -93,23 +94,22 @@ def fake_cmds(phots, space=0.2):
                            (m2 > ylim[1]) & (col > xlim[0]))
         # single burst figure
         ax_joints[idx].plot(col[inds], m2[inds], 'o', ms=2, mec='none',
-                      color=clp[icov], zorder=100-icov,
-                      rasterized=True)
+                            color=clp[icov], zorder=100-icov, rasterized=True)
         # 50 bins or use seaborn's nice binning
         cb = min(_freedman_diaconis_bins(col[inds]), 50)
         mb = min(_freedman_diaconis_bins(m2[inds]), 50)
 
         # histograms
         ax_marg_xs[idx].hist(col[inds], cb, orientation='vertical',
-                       histtype='step', color=clp[icov], lw=1.4)
+                             histtype='step', color=clp[icov], lw=1.4)
         ax_marg_ys[idx].hist(m2[inds], mb, orientation='horizontal',
-                       histtype='step', color=clp[icov], lw=1.4)
+                             histtype='step', color=clp[icov], lw=1.4)
         ax_joints[idx].set_ylim(ylim)
         ax_joints[idx].set_xlim(xlim)
 
     # main axes limits
-    ax.set_xlim(-0.5,2)
-    ax.set_ylim(22,10)
+    ax.set_xlim(-0.5, 2)
+    ax.set_ylim(22, 10)
     ax.set_xlabel('$F555W-F814W$')
     ax.set_ylabel('$F814W$')
 
@@ -119,7 +119,7 @@ def fake_cmds(phots, space=0.2):
         ax_marg_ys[i].set_xscale('log')
         # fake out legend
         labels = [r'$\Lambda_c=%.1f$' % float(c.replace('OV', ''))
-                for c in cov_strs]
+                  for c in cov_strs]
         for j in range(len(labels)):
             ax_joints[i].plot(100, 100, 'o', color=clp[j], label=labels[j])
             if i == 0:
@@ -174,7 +174,7 @@ def cov_complifetimes(track_summary, hb=False, both=False):
         tau = 'tau_He'
     taustr = r'\{}_{{{}}}'.format(*tau.split('_'))
 
-    data = pd.read_table(track_summary, delim_whitespace=True)
+    data = pd.read_csv(track_summary, delim_whitespace=True)
 
     intp_masses = np.arange(1, 6, 0.02)
     uzs = np.unique(data['Z'])
@@ -227,7 +227,7 @@ def plot_compare_tracks(Z=0.006, cmd=False, colors=None, save=True,
                         legend=True):
     """
     Plot tracks of different overshooting values.
-    If cmd, HB will be smoothed.
+    If cmd, and PARSEC, HB will be smoothed.
     """
     plt.rcParams['lines.linewidth'] = 1.4
     w = 21
@@ -272,10 +272,11 @@ def plot_compare_tracks(Z=0.006, cmd=False, colors=None, save=True,
             track_name = get_files(track_dir, '*M{:.2f}*acs_wfc'.format(mass))
             track = Track(track_name[0])
             if len(track_name) > 1:
-                # slap the PMS and HB tracks together...
+                # slap the MS and HB tracks together...
                 # this won't add MSTO age to HB, only for HRD plotting.
                 df1 = pd.DataFrame(track.data)
-                track.data = df1.append(pd.DataFrame(Track(track_name[1]).data),
+                t2 = Track(track_name[1])
+                track.data = df1.append(pd.DataFrame(t2.data),
                                         ignore_index=True)
             tracks.append(track)
 
@@ -356,17 +357,18 @@ def plot_compare_tracks(Z=0.006, cmd=False, colors=None, save=True,
     return fig, (axm, axhbt, axhbb)
 
 
-model_pltkw = {'mist': {'label': r'$\rm{MIST}$',
-                       'color': '#e66101'},
-              'dartmouth': {'label': r'$\rm{Dartmouth}$',
-                            'color': '#2166ac'},
-              'vr': {'label': r'$\rm{Victoria-Regina}$',
-                     'color': '#1b7837'},
-              'yy': {'label': r'$\rm{YaPSI}$',
-                     'color': '#5e3c99'}}
+# could be more general, but it takes some work to get the tracks...
+model_pltkw = {'mist': {'label': r'$\rm{MIST}$', 'color': '#e66101'},
+               'dartmouth': {'label': r'$\rm{Dartmouth}$', 'color': '#2166ac'},
+               'vr': {'label': r'$\rm{Victoria-Regina}$', 'color': '#1b7837'},
+               'yy': {'label': r'$\rm{YaPSI}$', 'color': '#5e3c99'}}
 
 
 def add_models(cmd=False):
+    """
+    call plot_compare_tracks and then overplot tracks from other
+    modeling groups
+    """
     models = list(model_pltkw.keys())
     fig, (axm, axhbt, axhbb) = plot_compare_tracks(colors='grey', save=False,
                                                    legend=False, cmd=cmd)
@@ -408,7 +410,7 @@ def add_models(cmd=False):
     # Hack: y is inexplicably added as a label in plot_compare_tracks
     handles, labels = axm.get_legend_handles_labels()
     il = [i for i, l in enumerate(labels)
-          if not 'logL' in l and not 'F475W' in l]
+          if 'logL' not in l and 'F475W' not in l]
     axm.legend(np.array(handles)[il], np.array(labels)[il], loc=2, fontsize=16)
 
     outfile = 'COV_HRD_extra'

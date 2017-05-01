@@ -1,0 +1,9 @@
+# Include the license file
+include LICENSE
+
+# Include the data files
+recursive-include phot *
+recursive-include stev *
+recursive-include pdf *
+recursive-include mock *
+

@@ -3,11 +3,14 @@ import argparse
 import os
 import sys
 
-from .cov_plots import (plot_compare_tracks, cov_complifetimes, fake_cmds,
-                    add_models)
 from .config import MOCK_LOC, TRACKS_LOC
+from .cov_plots import (add_models, cov_complifetimes, fake_cmds,
+                        plot_compare_tracks)
+from .utils import get_files
+
 
 def parse_args(argv=None):
+    """argument parsinge for core overshooting plots"""
     parser = argparse.ArgumentParser(
         description="plots related to core overshooting")
 
@@ -27,12 +30,12 @@ def parse_args(argv=None):
 
 
 def main(argv=None):
+    """main caller for overshooting plots"""
     args = parse_args(argv)
     if args.tracks:
-        # track files are searched within the function...
+        # track files are searched for in plot_compare_tracks.
         [plot_compare_tracks(cmd=b) for b in [True, False]]
     if args.stev:
-        # track files are searched within the function...
         [add_models(cmd=b) for b in [True, False]]
     if args.lifetimes:
         track_summary = os.path.join(TRACKS_LOC, 'track_summary.dat')
@@ -41,6 +44,7 @@ def main(argv=None):
         # load mock data
         phots = get_files(MOCK_LOC, '*full')
         fake_cmds(phots)
+
 
 if __name__ == "__main__":
     sys.exit(main())

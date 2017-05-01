@@ -1,16 +1,18 @@
-from __future__ import print_function, absolute_import
+"""Functions supporting CMD related plots"""
+from __future__ import absolute_import, print_function
+
 import os
+
 import matplotlib.pyplot as plt
 import numpy as np
-
 from astropy.io import fits
 
-from .config import cmd_limits, FIGEXT
-from .inset_plot import setup_zoomgrid, adjust_zoomgrid
+from .config import FIGEXT, cmd_limits
+from .inset_plot import adjust_zoomgrid, setup_zoomgrid
 
 
 def parse_pipeline(filename):
-    '''find target and filters from the filename'''
+    """find target and filters from the filename"""
     import re
     name = os.path.split(filename)[1].upper()
 
@@ -18,18 +20,18 @@ def parse_pipeline(filename):
     starts = np.array([m.start() for m in re.finditer('_F', name)])
     starts += 1
     if len(starts) == 1:
-        starts = np.append(starts, starts+6)
-    filters = [name[s: s+5] for s in starts]
+        starts = np.append(starts, starts + 6)
+    filters = [name[s: s + 5] for s in starts]
 
     # the target name is assumed to be before the filters in the filename
-    pref = name[:starts[0]-1]
+    pref = name[:starts[0] - 1]
     for pre in pref.split('_'):
         if pre == 'IR':
             continue
         try:
             # this could be the proposal ID
             int(pre)
-        except:
+        except ValueError:
             # a mix of str and int should be the target
             target = pre
     return target, filters
@@ -50,7 +52,7 @@ def load_obs(filename, filter1, filter2, xyfile=None, fextra='VEGA',
         column name of mag1, mag2
     fextra : string (needed for fits reader)
         use if column name of mag1, mag2 is prefix. For example,
-        fextra='VEGA' if F475W_VEGA is the mag1 colun name but
+        fextra='VEGA' if F475W_VEGA is the mag1 column name but
         F475W_CROWD or other columns exist.
     xyfile : string
         optional file with x,y or ra, dec information if not in observation
@@ -105,7 +107,7 @@ def load_obs(filename, filter1, filter2, xyfile=None, fextra='VEGA',
         try:
             _, x, y, mag, mag_err, color, color_err, _, _ = \
                 np.loadtxt(filename, unpack=True)
-        except:
+        except ValueError:
             print("Can't understand file format {}".format(filename))
             return None, None
     else:
@@ -158,7 +160,7 @@ def _plot_cmd(color, mag, color_err=None, mag_err=None, inds=None, ax=None,
                         capsize=0, ecolor='gray')
         else:
             median_err(color[inds], mag[inds], color_err[inds], mag_err[inds],
-                      ax=ax)
+                       ax=ax)
     return ax
 
 
@@ -199,9 +201,11 @@ def median_err(color, mag, color_err, mag_err, ax=None, dmag=1.,
 
     magbins = np.arange(np.floor(mmin), np.ceil(mmax), dmag)
     idix = np.digitize(mag, magbins)
-    merrs = np.array([np.mean(mag_err[idix==i]) for i in range(len(magbins))])
+    merrs = np.array([np.mean(mag_err[idix == i])
+                      for i in range(len(magbins))])
     merrs[np.isnan(merrs)] = 0
-    cerrs = np.array([np.mean(color_err[idix==i]) for i in range(len(magbins))])
+    cerrs = np.array([np.mean(color_err[idix == i])
+                      for i in range(len(magbins))])
     carr = np.repeat(cplace, len(magbins))
     if ax is not None:
         ax.errorbar(carr, magbins, fmt='none', xerr=cerrs, yerr=merrs, lw=1.4,
@@ -246,17 +250,12 @@ def cmd(obs, filter1, filter2, zoom=False, xlim=None, ylim=None,
         load_obs(obs, filter1, filter2, **load_obskw)
 
     if axs is None:
-        if not xy:
-            if zoom:
-                fig, (ax, ax2, ax3) = setup_zoomgrid()
-            else:
-                fig, ax = plt.subplots(figsize=(12, 12))
+        if zoom:
+            fig, (ax, ax2, ax3) = setup_zoomgrid()
         else:
-            fig, (ax, axxy) = plt.subplots(ncols=2, figsize=(16, 8))
+            fig, ax = plt.subplots(figsize=(12, 12))
     else:
-        if xy:
-            ax, axxy = axs
-        elif zoom:
+        if zoom:
             ax, ax2, ax3 = axs
         else:
             ax = axs
@@ -277,7 +276,8 @@ def cmd(obs, filter1, filter2, zoom=False, xlim=None, ylim=None,
                         inds=good, ax=ax2, plt_kw=plt_kwz)
         ax3 = _plot_cmd(color, mag, color_err=color_err, mag_err=mag_err,
                         inds=good, ax=ax3, plt_kw=plt_kwz)
-        axs = adjust_zoomgrid(ax, ax2, ax3, zoom1_kw=zoom1_kw, zoom2_kw=zoom2_kw)
+        axs = adjust_zoomgrid(
+            ax, ax2, ax3, zoom1_kw=zoom1_kw, zoom2_kw=zoom2_kw)
 
     return fig, axs
 
@@ -296,9 +296,8 @@ def cmd_plots(clusters, membs):
         filter1, filter2 = filters
         targ = os.path.split(cluster)[1].split('_')[1]
 
-        cmd_kw = dict({'xy': False, 'zoom': True,
-                       'load_obskw': {'crowd': 1.3}},
-                        **cmd_limits(targ))
+        cmd_kw = dict({'zoom': True, 'load_obskw': {'crowd': 1.3}},
+                      **cmd_limits(targ))
 
         fig, axs = cmd(cluster, filter1, filter2, plt_kw={'alpha': 0.3},
                        **cmd_kw)
@@ -309,8 +308,8 @@ def cmd_plots(clusters, membs):
         axs[1].set_title('${}$'.format(targ))
 
         [ax.ticklabel_format(useOffset=False) for ax in axs]
-        outfile = os.path.join(os.getcwd(),
-                               '{0:s}{1:s}'.format(os.path.split(pref)[1], FIGEXT))
+        outfile = os.path.join(os.getcwd(), '{0:s}_cmd{1:s}'
+                               .format(targ, FIGEXT))
         plt.savefig(outfile)
         print('wrote {}'.format(outfile))
         plt.close()

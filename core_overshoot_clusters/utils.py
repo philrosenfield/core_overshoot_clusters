@@ -1,4 +1,6 @@
+"""common utility functions"""
 import os
+
 
 def get_files(src, search_string):
     """
@@ -46,7 +48,8 @@ def get_dirs(src, criteria=None):
     dirs : list
         abs path of directories found (or empty)
     """
-    dirs = [os.path.join(src, l) for l in os.listdir(src) if os.path.join(src, l)]
+    dirs = [os.path.join(src, l)
+            for l in os.listdir(src) if os.path.join(src, l)]
     if criteria is not None:
         dirs = [d for d in dirs if criteria in d]
     return dirs

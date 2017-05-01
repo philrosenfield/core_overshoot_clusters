@@ -1,11 +1,14 @@
 """plotting functions related to PDF plots"""
-from __future__ import print_function, absolute_import
+from __future__ import absolute_import, print_function
+
 import os
+
 import matplotlib.pyplot as plt
 import numpy as np
 
-from .config import key2label, FIGEXT
+from .config import FIGEXT, key2label
 from .ssp import SSP
+
 
 def unify_axlims(axs, bycolumn=True, x=True, y=False):
     """set all axes limits to largest range of axes"""
@@ -24,7 +27,7 @@ def unify_axlims(axs, bycolumn=True, x=True, y=False):
 def fixcorner(fig, axs, ndim):
     """tweak corner plots, add large ylabel, set number of ticks"""
     labelfmt = r'$\rm{{{}}}$'
-    for ax in axs.ravel()[:-1*ndim]:
+    for ax in axs.ravel()[:-1 * ndim]:
         ax.tick_params(labelbottom='off', tickdir='in')
         ax.axes.set_xlabel('')
     [ax.axes.set_ylabel('') for ax in axs[:, 0]]
@@ -130,9 +133,9 @@ def cluster_result_plots(sspfns, oned=True, twod=True, onefig=True,
             label = None
 
         if oned:
-            f, raxs = pdf_plots(ssp, marginals=marg_cols, text=label, axs=axs[i],
-                                quantile=True, fig=fig, gauss1D=gauss,
-                                truth=truth)
+            f, raxs = pdf_plots(ssp, marginals=marg_cols, text=label,
+                                axs=axs[i], quantile=True, fig=fig,
+                                gauss1D=gauss, truth=truth)
             if 'lagei' in list(truth.keys()):
                 j = marg_cols.index('lage')
                 agei = truth['lagei']
@@ -158,7 +161,8 @@ def cluster_result_plots(sspfns, oned=True, twod=True, onefig=True,
         if twod:
             pdf_plots(ssp, marginals=marg_cols, twod=True, quantile=True,
                       cmap=cmap, gauss1D=gauss)
-            figname = os.path.split(sspfn)[1].replace('.csv', '{}{}'.format(mstr, FIGEXT))
+            figname = os.path.split(sspfn)[1].replace(
+                '.csv', '{}{}'.format(mstr, FIGEXT))
             plt.savefig(figname)
             print('wrote {0:s}'.format(figname))
             plt.close()
@@ -168,15 +172,19 @@ def cluster_result_plots(sspfns, oned=True, twod=True, onefig=True,
         line += targ + '& '
         try:
             gs[0].mean
-            line += ' &  '.join(['{:.3f} & {:.3f}'.format(g.mean/1., g.stddev/2.) for g in gs])
-        except:
+            line += ' &  '.join(
+                ['{:.3f} & {:.3f}'.format(g.mean / 1., g.stddev / 2.)
+                 for g in gs])
+        except (AttributeError, TypeError):
             try:
                 gs[0][2]
-            except:
-                gs = [ssp.__getattribute__('{0:s}q'.format(q)) for q in marg_cols]
+            except TypeError:
+                gs = [ssp.__getattribute__('{0:s}q'.format(q))
+                      for q in marg_cols]
             j = marg_cols.index('logZ')
             gs[j] = 0.01524 * 10 ** gs[j]
-            line += ' &  '.join([fmt.format(g[2], g[1]-g[2], g[2]-g[0]) for g in gs])
+            line += ' &  '.join([fmt.format(g[2], g[1] -
+                                            g[2], g[2] - g[0]) for g in gs])
 
         line += r'\\'
         line += '\n'
@@ -204,7 +212,7 @@ def fix_diagonal_axes(raxs, ndim):
     """
     nplots = len(raxs)
     idiag = [i * (ndim + 1) for i in range(nplots // (ndim + 1))]
-    [raxs[i].set_xlim(raxs[i+1].get_xlim()) for i in idiag]
+    [raxs[i].set_xlim(raxs[i + 1].get_xlim()) for i in idiag]
     [raxs[nplots - 1].set_xlim(raxs[ndim - 1].get_ylim()) for i in idiag]
     return
 
@@ -255,13 +263,13 @@ def corner_setup(ndim):
     [axs[k, k].tick_params(**lnp_ticks) for k in range(ndim)]
 
     # Turn off bottom tick labels on all but bottom axes
-    [ax.tick_params(labelbottom='off') for ax in axs[:ndim-1, :].ravel()]
+    [ax.tick_params(labelbottom='off') for ax in axs[:ndim - 1, :].ravel()]
 
     # Turn off left tick labels on all but left axes
     [ax.tick_params(labelleft='off') for ax in axs[:, 1:].ravel()]
 
     # Turn off upper triangle axes
-    [[ax.set_visible(False) for ax in axs[k, k+1:]] for k in range(ndim)]
+    [[ax.set_visible(False) for ax in axs[k, k + 1:]] for k in range(ndim)]
 
     if ndim > 2:
         fig.subplots_adjust(left=0.1, bottom=0.1, top=0.95, right=0.95)
@@ -420,36 +428,37 @@ def pdf_plot(SSP, xattr, yattr=None, ax=None, sub=None, save=False,
             if not SSP.vdict[xattr]:
                 return ax
             X, prob = SSP.marginalize(xattr, log=logp)
-        l = ax.plot(X, prob, **plt_kw)
+        line = ax.plot(X, prob, **plt_kw)
 
         if gauss1D or quantile:
             ax = add_quantiles(SSP, ax, xattr, uvalss=[X], probs=[prob],
                                gauss=gauss1D)
         ax.set_xlim(X.min(), X.max())
-        # yaxis max is the larger of 10% higher than the max val or current ylim.
+        # yaxis max is the larger of 10% higher than the max val or current
+        # ylim.
         ymax = np.max([prob.max() + (prob.max() * 0.1), ax.get_ylim()[1]])
         ax.set_ylim(prob.min(), ymax)
 
         if save:
             ptype = 'marginal'
             # ax.set_ylabel(key2label('fit'))
-            ax.set_ylabel(key2label(pstr+'Probability'))
+            ax.set_ylabel(key2label(pstr + 'Probability'))
     else:
         # plot type is joint probability.
         # Attribute1 vs Attribute2 colored by fit
         if not SSP.vdict[xattr] or not SSP.vdict[yattr]:
             return ax
         [X, Y], prob = SSP.marginalize(xattr, yattr=yattr, log=logp)
-        l = ax.pcolor(X, Y, prob, cmap=cmap)
+        line = ax.pcolor(X, Y, prob, cmap=cmap)
         if gauss1D or quantile:
             add_quantiles(SSP, ax, [xattr, yattr], twod=True, gauss=gauss1D)
         ax.set_xlim(X.min(), X.max())
         ax.set_ylim(Y.min(), Y.max())
 
         if do_cbar:
-            cbar = plt.colorbar(l)
+            cbar = plt.colorbar(line)
             # cbar.set_label(key2label('fit'))
-            cbar.set_label(key2label(pstr+'Probability'))
+            cbar.set_label(key2label(pstr + 'Probability'))
 
         if save:
             ptype = '{}_joint'.format(yattr)
@@ -496,7 +505,8 @@ def pdf_plots(SSP, marginals=None, sub=None, twod=False, truth=None,
     if ndim != len(valid_margs):
         bad_margs = [m for m in marginals if m not in valid_margs]
         marginals = [m for m in marginals if m in valid_margs]
-        print('Warning: {} does not vary and will be skipped.'.format(bad_margs))
+        print('Warning: {} does not vary and will be skipped.'
+              .format(bad_margs))
         ndim = len(marginals)
 
     raxs = []
@@ -508,7 +518,7 @@ def pdf_plots(SSP, marginals=None, sub=None, twod=False, truth=None,
                 if r == c:
                     # diagonal
                     # my = 'fit'  # my is reset for ylabel call
-                    my = pstr+'Probability'
+                    my = pstr + 'Probability'
                     raxs.append(pdf_plot(SSP, mx, ax=ax, truth=truth, **plkw))
                 else:
                     # off-diagonal
@@ -526,7 +536,8 @@ def pdf_plots(SSP, marginals=None, sub=None, twod=False, truth=None,
         fix_diagonal_axes(raxs, ndim)
     else:
         if fig is None and axs is None:
-            fig, axs = plt.subplots(ncols=ndim, figsize=(ndim * 3., ndim * 0.6))
+            fig, axs = plt.subplots(
+                ncols=ndim, figsize=(ndim * 3., ndim * 0.6))
         [ax.tick_params(left='off', labelleft='off', right='off', top='off')
          for ax in axs]
         X = None

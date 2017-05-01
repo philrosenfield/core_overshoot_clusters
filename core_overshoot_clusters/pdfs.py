@@ -2,11 +2,12 @@
 import argparse
 import os
 import sys
+
 import matplotlib.pyplot as plt
 import numpy as np
 
-from .pdf_plots import cluster_result_plots
 from .config import PDF_LOC
+from .pdf_plots import cluster_result_plots
 
 
 def load_files(mock=False):
@@ -28,6 +29,7 @@ def load_files(mock=False):
 
 
 def parse_args(argv=None):
+    """argument parser for pdf plotting"""
     parser = argparse.ArgumentParser(
         description="pdf plots for a calcsfh run")
 
@@ -41,10 +43,12 @@ def parse_args(argv=None):
 
 
 def main(argv=None):
+    """main caller for making pdf plots"""
     args = parse_args(argv)
 
     filenames = load_files(mock=args.test)
     cluster_result_plots(filenames, mock=args.test, ovis5=args.ov5)
+
 
 if __name__ == "__main__":
     sys.exit(main())

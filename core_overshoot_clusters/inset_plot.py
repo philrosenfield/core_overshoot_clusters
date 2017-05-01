@@ -1,5 +1,6 @@
 """plotting functions for 1 main panel and 2 inset panels"""
 from __future__ import print_function
+
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -22,11 +23,11 @@ def setup_zoomgrid():
     """
     fig = plt.figure(figsize=(8, 6.5))
     # cmd grid is one square taking up 4 of the 6 axes
-    ax = plt.subplot2grid((2,3), (0,0), rowspan=2, colspan=2)
+    ax = plt.subplot2grid((2, 3), (0, 0), rowspan=2, colspan=2)
     # for HB probably
-    ax2 = plt.subplot2grid((2,3), (0,2))
+    ax2 = plt.subplot2grid((2, 3), (0, 2))
     # for MSTO probably
-    ax3 = plt.subplot2grid((2,3), (1,2))
+    ax3 = plt.subplot2grid((2, 3), (1, 2))
 
     plt.subplots_adjust(wspace=0.15, right=0.88)
     ax.tick_params(right=False, top=False, bottom=True, left=True)

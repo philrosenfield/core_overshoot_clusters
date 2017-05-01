@@ -30,39 +30,51 @@ Columns:
 For information on how to read binary fits tables see [astropy](http://docs.astropy.org/en/stable/io/fits/index.html).
 
   Columns:
+
        X                                     
        Y                                     
        RA                                    
        DEC                                   
+
   For each filter listed in the filename, the following columns exist:
+
        [filter]_RATE                            
        [filter]_RATERR                          
        [filter]_VEGA : vegamag
        [filter]_STD
        [filter]_ERR : vegamag err
+
   The following refer to DOLPHOT flags (see DOLPHOT readme file)
+
        [filter]_CHI
        [filter]_SNR
        [filter]_SHARP
        [filter]_ROUND
        [filter]_CROWD
        [filter]_FLAG
+
 ## File listing
+
 ### ./asteca
+
        12257_HODGE2_F475W-F814W_gst_memb.dat
        12257_NGC2213_F475W-F814W_gst_memb.dat
        12257_NGC1718_F475W-F814W_gst_memb.dat
        9891_NGC1644_F555W-F814W_gst_memb.dat
        12257_NGC2203_F475W-F814W_gst_memb.dat
        9891_NGC1795_F555W-F814W_gst_memb.dat
+
 ### ./asts
+
        12257_HODGE2_F475W-F814W.gst.matchfake
        12257_NGC2213_F475W-F814W.gst.matchfake
        12257_NGC1718_F475W-F814W.gst.matchfake
        9891_NGC1644_F555W-F814W.gst.matchfake
        12257_NGC2203_F475W-F814W.gst.matchfake
        9891_NGC1795_F555W-F814W.gst.matchfake
+
 ### ./obs
+
        12257_HODGE2_F475W-F814W_gst.fits
        12257_NGC1718_F475W-F814W_gst.fits
        12257_NGC2203_F336W-F475W-F814W_gst.fits

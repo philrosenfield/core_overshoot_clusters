@@ -29,26 +29,26 @@ Figure 1 and 2 are not included. To make the rest of the figures run `bash all_p
 ### Figure-by-Figure
 * Figure 3: CMDs of the clusters.
   * data: `phot/obs/*gst` and `phot/asteca/*dat`
-  * main code: `code/cmd_plots.cmd_plots`
-  * make the figure: `python -m clusters_data.code.cmds`
+  * main code: `cmd_plots.cmd_plots`
+  * make the figure: `python -m core_overshoot_clusters.cmds`
 * Figure 4: The effect of core overshooting on H and He burning lifetimes as a function stellar mass.
   * data: `stev/track_summary.dat`
   * main code: `cov_plots.cov_complifetimes`
-  * make the figure: `python -m clusters_data.code.covs -l`
+  * make the figure: `python -m core_overshoot_clusters.covs -l`
 * Figure 5: HRD and CMD of tracks as a function of core overshooting
   * data: `stev/...`
   * main code: `cov_plots.plot_compare_tracks`
-  * make the figure: `python -m clusters_data.code.covs -t`
+  * make the figure: `python -m core_overshoot_clusters.covs -t`
 * Figure 6: CMDs of synthetic stellar populations (mock data)
   * data: `mock/*full`
   * main code: `cov_plots.fake_cmds`
-  * make the figure: `python -m clusters_data.code.covs -m`
+  * make the figure: `python -m core_overshoot_clusters.covs -m`
 * Figure 7+: PDF plots (marginalized or joint-marginalized)
   * data:
     * Fig 7, 8: `pdfs/mock/`
     * Fig 9+: `pdfs/clusters/`
   * main code: `pdf_plots.cluster_result_plots`
   * make the figures:
-    * Fig 7, 8: `python -m clusters_data.code.pdfs -t`
-    * Fig 9, 10: `python -m clusters_data.code.pdfs -m`
-    * Fig 11, 12: `python -m clusters_data.code.pdfs`
+    * Fig 7, 8: `python -m core_overshoot_clusters.pdfs -t`
+    * Fig 9, 10: `python -m core_overshoot_clusters.pdfs -m`
+    * Fig 11, 12: `python -m core_overshoot_clusters.pdfs`

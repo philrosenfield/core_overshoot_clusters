@@ -1,4 +1,4 @@
-"""plotting functions related to PDF plots"""
+"""Plotting functions related to PDF plots."""
 from __future__ import absolute_import, print_function
 
 import os
@@ -11,10 +11,10 @@ from .ssp import SSP
 
 
 def unify_axlims(axs, bycolumn=True, x=True, y=False):
-    """set all axes limits to largest range of axes"""
+    """Set all axes limits to largest range of axes."""
     if bycolumn:
         axs = axs.T
-    for i in range(len(axs)):
+    for i, _ in enumerate(axs):
         col = axs[i]
         if x:
             l, h = zip(*[a.get_xlim() for a in col])
@@ -25,7 +25,7 @@ def unify_axlims(axs, bycolumn=True, x=True, y=False):
 
 
 def fixcorner(fig, axs, ndim):
-    """tweak corner plots, add large ylabel, set number of ticks"""
+    """Tweak corner plots, add large ylabel, set number of ticks."""
     labelfmt = r'$\rm{{{}}}$'
     for ax in axs.ravel()[:-1 * ndim]:
         ax.tick_params(labelbottom='off', tickdir='in')
@@ -47,7 +47,7 @@ def cluster_result_plots(sspfns, oned=True, twod=True, onefig=True,
                          gauss=False, quantile=True, mock=False,
                          ovis5=False):
     """
-    PDF plots of the results
+    PDF plots of the results.
 
     Parameters
     ----------
@@ -205,7 +205,7 @@ def cluster_result_plots(sspfns, oned=True, twod=True, onefig=True,
 
 def fix_diagonal_axes(raxs, ndim):
     """
-    set diagonal xaxis limits to that of the off diagonal xaxis limits.
+    Set diagonal xaxis limits to that of the off diagonal xaxis limits.
 
     With corner_meshgrid, the axes limits for the 2d plots will be slightly
     different than the 1d plots.
@@ -218,8 +218,9 @@ def fix_diagonal_axes(raxs, ndim):
 
 
 def add_inner_title(ax, title, loc, size=None):
-    '''
-    add a label to an axes as if it were a legend (loc must be 1-11)
+    """
+    Add a label to an axes as if it were a legend (loc must be 1-11).
+
         'upper right'     1
         'upper left'      2
         'lower left'      3
@@ -230,7 +231,7 @@ def add_inner_title(ax, title, loc, size=None):
         'lower center'    8
         'upper center'    9
         'center'          10
-    '''
+    """
     from matplotlib.patheffects import withStroke
     from matplotlib.offsetbox import AnchoredText
 
@@ -246,7 +247,8 @@ def add_inner_title(ax, title, loc, size=None):
 
 def corner_setup(ndim):
     """
-    Setup a corner plot
+    Setup a corner plot.
+
     Only keep ticklabels on outter left and bottom plots, only set visible
     lower triangle of the plot grid.
 
@@ -279,7 +281,7 @@ def corner_setup(ndim):
 def add_quantiles(SSP, ax, attrs, uvalss=None, probs=None,
                   twod=False, gauss=False):
     """
-    Add some lines!
+    Add some lines.
 
     Parameters
     ----------
@@ -378,7 +380,8 @@ def add_quantiles(SSP, ax, attrs, uvalss=None, probs=None,
 def pdf_plot(SSP, xattr, yattr=None, ax=None, sub=None, save=False,
              truth=None, cmap=None, plt_kw=None, X=None, prob=None,
              logp=True, quantile=False, gauss1D=False):
-    """Plot -2 ln P vs marginalized attributes
+    """
+    Plot -2 ln P vs marginalized attributes.
 
     SSP : SSP class instance
 
@@ -477,7 +480,7 @@ def pdf_plot(SSP, xattr, yattr=None, ax=None, sub=None, save=False,
             sub = '_' + sub
         outfmt = '{}_{}{}_{}{}'
         outname = outfmt.format(SSP.name.replace('.csv', ''),
-                                xattr, sub, ptype, EXT)
+                                xattr, sub, ptype, FIGEXT)
         plt.savefig(outname, bbox_inches='tight')
         print('wrote {}'.format(outname))
         plt.close()
@@ -487,7 +490,7 @@ def pdf_plot(SSP, xattr, yattr=None, ax=None, sub=None, save=False,
 def pdf_plots(SSP, marginals=None, sub=None, twod=False, truth=None,
               text=None, cmap=None, fig=None, axs=None,
               logp=True, gauss1D=False, quantile=False):
-    """Call pdf_plot for a list of xattr and yattr"""
+    """Call pdf_plot for a list of xattr and yattr."""
     text = text or ''
     sub = sub or ''
     truth = truth or {}

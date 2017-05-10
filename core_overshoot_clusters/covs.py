@@ -1,4 +1,4 @@
-"""Make plots related to core overshooting"""
+"""Make plots related to core overshooting."""
 import argparse
 import os
 import sys
@@ -10,7 +10,7 @@ from .utils import get_files
 
 
 def parse_args(argv=None):
-    """argument parsinge for core overshooting plots"""
+    """Argument parsinge for core overshooting plots."""
     parser = argparse.ArgumentParser(
         description="plots related to core overshooting")
 
@@ -30,7 +30,7 @@ def parse_args(argv=None):
 
 
 def main(argv=None):
-    """main caller for overshooting plots"""
+    """Main caller for overshooting plots."""
     args = parse_args(argv)
     if args.tracks:
         # track files are searched for in plot_compare_tracks.

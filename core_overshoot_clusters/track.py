@@ -1,4 +1,4 @@
-'''Class to read stellar tracks'''
+"""Class to read stellar tracks."""
 import os
 
 import numpy as np
@@ -46,18 +46,19 @@ track_columns = {
 
 
 class Track(object):
-    '''Padova stellar track class.'''
+    """Padova stellar track class."""
 
     def __init__(self, filename, model='parsec'):
-        '''
-        load the track
+        """
+        Load the track.
+
         adds path base, file name and hb (bool) to self.
 
         Parameters
         ----------
         filename : str
             the path to the track file
-        '''
+        """
         self.base, self.name = os.path.split(filename)
 
         self.hb = False
@@ -67,8 +68,8 @@ class Track(object):
         self.load_track(filename, model=model)
 
     def load_track(self, filename, model='parsec'):
-        '''
-        load the PARSEC (interpolated for MATCH) tracks into a record array
+        """
+        Load the PARSEC (interpolated for MATCH) tracks into a record array.
 
         File contains Mbol, but it is converted to logL on read:
         logL = (4.77 - Mbol) / 2.5
@@ -90,7 +91,7 @@ class Track(object):
             data : recarry of the file contents
             mass : float
                 initial mass of the track (from the first row of data)
-        '''
+        """
         kw = {}
         if model == 'parsec':
             # Mbol to logL
@@ -108,6 +109,7 @@ class Track(object):
 
 
 def mbol2logl(m):
+    """Convert Mbol to Log L (Mbol_sun = 4.77)."""
     try:
         logl = (4.77 - float(m)) / 2.5
     except TypeError:

@@ -1,4 +1,4 @@
-"""Stats and visualization of calcsfh -ssp runs"""
+"""Stats and visualization of calcsfh -ssp runs."""
 from __future__ import absolute_import, print_function
 
 import os
@@ -6,16 +6,16 @@ import os
 import numpy as np
 import pandas as pd
 
-__all__ = ['SSP']
+__all__ = ('SSP')
 
 
 def get_absprob(data):
-    """absprob is the posterior since the fit parameter is -2 ln (posterior)"""
+    """Absprob is the posterior. The fit parameter is -2 ln (posterior)."""
     data['absprob'] = np.exp(0.5 * (data['fit'].min() - data['fit']))
     return data
 
 
-def quantiles(ux, prob, qs=[0.16, 0.84], res=200, maxp=False,
+def quantiles(ux, prob, qs=None, res=200, maxp=False,
               ax=None, k=3):
     """
     Calculate quantiles, or lines at qs fraction of total area under the curve.
@@ -39,6 +39,7 @@ def quantiles(ux, prob, qs=[0.16, 0.84], res=200, maxp=False,
     interpolated ux evaluated at qs
     """
     from scipy.interpolate import splprep, splev
+    qs = qs or [0.16, 0.84]
     ((tckp, u), fp, ier, msg) = splprep([ux, prob], k=k, full_output=1)
     iux, iprob = splev(np.linspace(0, 1, res), tckp)
 
@@ -54,7 +55,8 @@ def quantiles(ux, prob, qs=[0.16, 0.84], res=200, maxp=False,
 
 
 def fitgauss1D(ux, prob):
-    """Fit a 1D Gaussian to a marginalized probability
+    """Fit a 1D Gaussian to a marginalized probability.
+
     Parameters
 
     xattr : str
@@ -83,9 +85,7 @@ def fitgauss1D(ux, prob):
 
 
 def lnprob(prob):
-    """
-    ln-ify the probability and set a 0 tolerance
-    """
+    """Ln-ify the probability and set a 0 tolerance."""
     lenp = len(prob)
     prob[prob == 0] = 1e-323
     prob = 2 * np.log(prob)
@@ -98,7 +98,8 @@ def lnprob(prob):
 
 def marg(x, z, unx=None, log=True):
     """
-    marginalize in 1d.
+    Marginalize in 1d.
+
     Does not normalize probability.
     z should be ssp.absprob or some linear probability
     NOTE: this simple code only works on a grid with equally spaced data
@@ -107,7 +108,7 @@ def marg(x, z, unx=None, log=True):
     if ux is None:
         ux = np.unique(x)
     prob = np.zeros(len(ux))
-    for i in range(len(ux)):
+    for i, _ in enumerate(ux):
         iz, = np.nonzero(x == ux[i])
         prob[i] = np.sum(z.iloc[iz])
     if log:
@@ -117,7 +118,8 @@ def marg(x, z, unx=None, log=True):
 
 def marg2d(x, y, z, unx=None, uny=None, log=True):
     """
-    marginalize in 2d.
+    Marginalize in 2d.
+
     Does not normalize probability.
     z should be ssp.absprob or some linear probability
     NOTE: this simple code only works on a grid with equally spaced data
@@ -130,20 +132,20 @@ def marg2d(x, y, z, unx=None, uny=None, log=True):
         uy = np.unique(y)
     prob = np.zeros(shape=(len(ux), len(uy)))
     models = np.array([])
-    for i in range(len(ux)):
-        for j in range(len(uy)):
+    for i, _ in enumerate(ux):
+        for j, _ in enumerate(uy):
             iz, = np.nonzero((x == ux[i]) & (y == uy[j]))
             models = np.append(models, len(iz))
             if len(iz) > 0:
                 prob[i, j] = np.sum(z.iloc[iz])
-    unm = np.unique(models)
+
     if log:
         prob = lnprob(prob)
     return prob, ux, uy
 
 
 def centered_meshgrid(x, y, unx=None, uny=None):
-    """call meshgrid with bins shifted so x, y will be at bin center"""
+    """Call meshgrid with bins shifted so x, y will be at bin center."""
     X, Y = np.meshgrid(center_grid(x, unx=unx),
                        center_grid(y, unx=uny),
                        indexing="ij")
@@ -151,7 +153,7 @@ def centered_meshgrid(x, y, unx=None, uny=None):
 
 
 def center_grid(a, unx=None):
-    """uniquify and shift a uniform array half a bin maintaining its size"""
+    """Uniquify and shift a uniform array half a bin maintaining its size."""
     x = unx
     if x is None:
         x = np.unique(a)
@@ -162,13 +164,12 @@ def center_grid(a, unx=None):
 
 
 class SSP(object):
-    """
-    Class for calcsfh -ssp outputs
-    """
+    """Class for calcsfh -ssp outputs."""
 
     def __init__(self, filename=None, data=None, filterby=None, gyr=False):
         """
-        filenames are the calcsfh -ssp terminal or console output.
+        Filename is the calcsfh -ssp terminal or console output.
+
         They do not need to be stripped of their header or footer or
         be concatenated as is typical in MATCH useage.
         """
@@ -199,14 +200,14 @@ class SSP(object):
             self.data = data
 
     def uniq_grid(self, skip_cols=None):
-        """call unique_ on all columns."""
+        """Call unique_ on all columns."""
         skip_cols = skip_cols or ['None']
         cols = [c for c in self.data.columns
                 if c not in skip_cols or 'prob' in c]
         [self.unique_(c) for c in cols]
 
     def _getmarginals(self, avoid_list=['fit']):
-        """get the values to marginalize over that exist in the data"""
+        """Get the values to marginalize over that exist in the data."""
         # marg = np.array(['Av', 'IMF', 'dmod', 'lage', 'logZ', 'dav',
         # 'ov', 'bf'])
         marg_ = np.array([k for k in self.data.columns if k not in avoid_list])
@@ -214,19 +215,20 @@ class SSP(object):
         return marg_[inds]
 
     def load_ssp(self, filename):
-        """read table add file base, name to self"""
+        """Read table add file base, name to self."""
         self.base, self.name = os.path.split(filename)
         return pd.read_csv(filename)
 
     def _haskey(self, key):
-        """test if the key requested is in self.data.columns"""
+        """Test if the key requested is in self.data.columns."""
         ecode = True
         if key not in self.data.columns:
             ecode = False
         return ecode
 
     def fitgauss1D(self, xattr, ux, prob):
-        """Fit a 1D Gaussian to a marginalized probability
+        """Fit a 1D Gaussian to a marginalized probability.
+
         see fitgauss1D
         sets attribute 'xattr'g
         """
@@ -236,7 +238,7 @@ class SSP(object):
 
     def quantiles(self, xattr, ux, prob, qs=[0.16, 0.84], res=200, maxp=False,
                   ax=None, k=3):
-        """Add quantiles, see quantiles"""
+        """Add quantiles, see quantiles."""
         g = quantiles(ux, prob, qs=qs, res=res, maxp=maxp, ax=ax,
                       k=k)
         self.__setattr__('{0:s}g'.format(xattr), g)
@@ -244,7 +246,7 @@ class SSP(object):
 
     def unique_(self, attr, uniq_attr='u{:s}'):
         """
-        call np.unique on self.data[attr] if it has not already been called.
+        Call np.unique on self.data[attr] if it has not already been called.
 
         Will store the unique array as an attribute passed with uniq_attr.
 
@@ -269,7 +271,8 @@ class SSP(object):
 
     def marginalize(self, xattr, yattr=None, **kwargs):
         """
-        Marginalize over one or two quanitities
+        Marginalize over one or two quanitities.
+
         xattr, yattr : string, string
             data column to marginalize over
 

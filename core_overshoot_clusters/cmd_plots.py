@@ -1,4 +1,4 @@
-"""Functions supporting CMD related plots"""
+"""Functions supporting CMD related plots."""
 from __future__ import absolute_import, print_function
 
 import os
@@ -12,7 +12,7 @@ from .inset_plot import adjust_zoomgrid, setup_zoomgrid
 
 
 def parse_pipeline(filename):
-    """find target and filters from the filename"""
+    """Find target and filters from the filename."""
     import re
     name = os.path.split(filename)[1].upper()
 
@@ -40,7 +40,8 @@ def parse_pipeline(filename):
 def load_obs(filename, filter1, filter2, xyfile=None, fextra='VEGA',
              crowd=None):
     """
-    Load observations
+    Load observations.
+
     Parameters
     ----------
     filename : string
@@ -120,7 +121,9 @@ def load_obs(filename, filter1, filter2, xyfile=None, fextra='VEGA',
 
 def _plot_cmd(color, mag, color_err=None, mag_err=None, inds=None, ax=None,
               plt_kw=None, star_by_starerr=False):
-    '''Plot a cmd with uncertainties
+    """
+    Plot a cmd with uncertainties.
+
     Parameters
     ----------
     color, mag : np.arrays
@@ -140,7 +143,7 @@ def _plot_cmd(color, mag, color_err=None, mag_err=None, inds=None, ax=None,
     Returns
     -------
     ax : plt.axes instance
-    '''
+    """
     if inds is None:
         inds = np.arange(len(mag))
 
@@ -167,8 +170,10 @@ def _plot_cmd(color, mag, color_err=None, mag_err=None, inds=None, ax=None,
 def median_err(color, mag, color_err, mag_err, ax=None, dmag=1.,
                cplace=None):
     """
-    Calculate mean color and mag errors as a function of mag bin (all colors
-    included)
+    Calculate mean color and mag errors as a function of mag bin.
+
+    (all colors included)
+
     Parameters
     ----------
     color, mag : np.arrays
@@ -202,10 +207,10 @@ def median_err(color, mag, color_err, mag_err, ax=None, dmag=1.,
     magbins = np.arange(np.floor(mmin), np.ceil(mmax), dmag)
     idix = np.digitize(mag, magbins)
     merrs = np.array([np.mean(mag_err[idix == i])
-                      for i in range(len(magbins))])
+                      for i, _ in enumerate(magbins)])
     merrs[np.isnan(merrs)] = 0
     cerrs = np.array([np.mean(color_err[idix == i])
-                      for i in range(len(magbins))])
+                      for i, _ in enumerate(magbins)])
     carr = np.repeat(cplace, len(magbins))
     if ax is not None:
         ax.errorbar(carr, magbins, fmt='none', xerr=cerrs, yerr=merrs, lw=1.4,
@@ -216,8 +221,9 @@ def median_err(color, mag, color_err, mag_err, ax=None, dmag=1.,
 def cmd(obs, filter1, filter2, zoom=False, xlim=None, ylim=None,
         fig=None, axs=None, plt_kw=None, zoom1_kw=None, zoom2_kw=None,
         load_obskw=None, plt_kwz=None):
-    '''
-    Plot cmd of data, with two insets (optional)
+    """
+    Plot cmd of data, with two insets (optional).
+
     Parameters
     ----------
     obs : string
@@ -242,7 +248,7 @@ def cmd(obs, filter1, filter2, zoom=False, xlim=None, ylim=None,
     Returns
     -------
     fig, axs : figure and axes
-    '''
+    """
     plt_kw = plt_kw or {}
     plt_kwz = plt_kwz or plt_kw.copy()
     load_obskw = load_obskw or {}
@@ -286,7 +292,7 @@ def cmd_plots(clusters, membs):
     """Produce two cmds overlaid one from clusters, one from membs."""
     clusters = np.atleast_1d(clusters)
     membs = np.atleast_1d(membs)
-    for i in range(len(clusters)):
+    for i, _ in enumerate(clusters):
         cluster = clusters[i]
         memb = membs[i]
         assert os.path.isfile(memb), '{0:s} not found'.format(memb)

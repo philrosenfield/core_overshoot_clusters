@@ -1,4 +1,4 @@
-"""main function to make CMD related plots"""
+"""Main function to make CMD related plots."""
 from __future__ import absolute_import
 import os
 import sys
@@ -9,7 +9,7 @@ from .utils import get_files
 
 
 def main():
-    """main caller for CMD plots"""
+    """Main caller for CMD plots."""
     membs = get_files(ASTECA_LOC, '*memb*')
     clusters = []
     for m in membs:

@@ -1,7 +1,5 @@
-"""Supporting functions for core overshooting plots"""
-import argparse
+"""Supporting functions for core overshooting plots."""
 import os
-import sys
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -17,10 +15,7 @@ from .utils import get_files, get_dirs
 
 
 def _joint_plot(size=8, ratio=5, space=0.2):
-    """
-    Hack edits of seaborn.JointGrid so to access side panel histograms mpl
-    style.
-    """
+    """Hack of seaborn.JointGrid to access panel histograms mpl style."""
     f = plt.figure(figsize=(size, size))
     gs = plt.GridSpec(ratio + 1, ratio + 1)
     ax_joint = f.add_subplot(gs[1:, :-1])
@@ -37,7 +32,8 @@ def _joint_plot(size=8, ratio=5, space=0.2):
 
 def fake_cmds(phots, space=0.2):
     """
-    Plot CMDs of mock data with top and side histograms in color and mag
+    Plot CMDs of mock data with top and side histograms in color and mag.
+
     Also plots a summary file with no side histograms.
     """
     # histogram binning
@@ -114,13 +110,13 @@ def fake_cmds(phots, space=0.2):
     ax.set_ylabel('$F814W$')
 
     # tweak plots
-    for i in range(len(fs)):
+    for i, _ in enumerate(fs):
         ax_marg_xs[i].set_yscale('log')
         ax_marg_ys[i].set_xscale('log')
         # fake out legend
         labels = [r'$\Lambda_c=%.1f$' % float(c.replace('OV', ''))
                   for c in cov_strs]
-        for j in range(len(labels)):
+        for j, _ in enumerate(labels):
             ax_joints[i].plot(100, 100, 'o', color=clp[j], label=labels[j])
             if i == 0:
                 ax.plot(100, 100, 'o', color=clp[j], label=labels[j])
@@ -140,13 +136,10 @@ def fake_cmds(phots, space=0.2):
 
 
 def cov_complifetimes(track_summary, hb=False, both=False):
-    """Plot a comparison of the H or He lifetimes vs Mass to OV=0.50"""
+    """Plot a comparison of the H or He lifetimes vs Mass to OV=0.50."""
     def setup_covlifetimes(data, z=0.008, hb=False, agescale=1e6,
                            intp_masses=None):
-        """
-        parse track_summary into useful dictionary
-        interpolate for smoother plotting
-        """
+        """Parse track_summary dict, interpolate for smoother plotting."""
         intp_dict = {}
         if intp_masses is None:
             intp_masses = np.arange(1, 6, 0.02)
@@ -227,6 +220,7 @@ def plot_compare_tracks(Z=0.006, cmd=False, colors=None, save=True,
                         legend=True):
     """
     Plot tracks of different overshooting values.
+
     If cmd, and PARSEC, HB will be smoothed.
     """
     plt.rcParams['lines.linewidth'] = 1.4
@@ -268,7 +262,8 @@ def plot_compare_tracks(Z=0.006, cmd=False, colors=None, save=True,
     tracks = []
     for cov in cov_strs:
         for mass in masses:
-            track_dir, = get_dirs(TRACKS_LOC, criteria='%s_Z%g_' % (cov, Z))
+            track_dir, = get_dirs(TRACKS_LOC,
+                                  criteria='%s_Z%g_'.format(cov, Z))
             track_name = get_files(track_dir, '*M{:.2f}*acs_wfc'.format(mass))
             track = Track(track_name[0])
             if len(track_name) > 1:
@@ -365,10 +360,7 @@ model_pltkw = {'mist': {'label': r'$\rm{MIST}$', 'color': '#e66101'},
 
 
 def add_models(cmd=False):
-    """
-    call plot_compare_tracks and then overplot tracks from other
-    modeling groups
-    """
+    """Call plot_compare_tracks, overplot tracks from other modeling groups."""
     models = list(model_pltkw.keys())
     fig, (axm, axhbt, axhbb) = plot_compare_tracks(colors='grey', save=False,
                                                    legend=False, cmd=cmd)

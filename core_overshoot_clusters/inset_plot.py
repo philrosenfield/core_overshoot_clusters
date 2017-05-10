@@ -1,4 +1,4 @@
-"""plotting functions for 1 main panel and 2 inset panels"""
+"""Plotting functions for 1 main panel and 2 inset panels."""
 from __future__ import print_function
 
 import matplotlib.pyplot as plt
@@ -6,7 +6,7 @@ import numpy as np
 
 
 def add_rect(ax, xlim, ylim, kw=None):
-    """caller for ax.add_patch"""
+    """Caller for ax.add_patch."""
     default = {'fill': False, 'color': 'grey', 'lw': 2, 'zorder': 1000}
     kw = kw or {}
     default.update(kw)
@@ -18,8 +18,9 @@ def add_rect(ax, xlim, ylim, kw=None):
 
 def setup_zoomgrid():
     """
-    Set up a 6 panel plot, 2x2 grid is one main axes and the other 2 are
-    zoom-ins of the main axes
+    Set up a 6 panel plot.
+
+    2x2 grid is one main axes and the other 2 are zoom-ins of the main axes
     """
     fig = plt.figure(figsize=(8, 6.5))
     # cmd grid is one square taking up 4 of the 6 axes
@@ -38,10 +39,7 @@ def setup_zoomgrid():
 
 
 def adjust_zoomgrid(ax, ax2, ax3, zoom1_kw=None, zoom2_kw=None, reversey=True):
-    """
-    zoom grid is just a fancy call to set_[x,y]lim and plot a
-    rectangle.
-    """
+    """Zoomgrid is a fancy call to set_[x,y]lim and plot a rectangle."""
     def adjust(ax, axz, zoom, reversey=True):
         add_rect(ax, **zoom)
         axz.set_xlim(zoom['xlim'])

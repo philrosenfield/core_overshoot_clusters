@@ -1,10 +1,10 @@
-"""common utility functions"""
+"""Common utility functions."""
 import os
 
 
 def get_files(src, search_string):
     """
-    Return a list files
+    Return a list files.
 
     Parameters
     ----------
@@ -34,7 +34,7 @@ def get_files(src, search_string):
 
 def get_dirs(src, criteria=None):
     """
-    Return a list of directories in src, optional simple cut by criteria
+    Return a list of directories in src, optional simple cut by criteria.
 
     Parameters
     ----------

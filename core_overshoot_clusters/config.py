@@ -1,6 +1,7 @@
 """
-configuration realated parameters. File locations, figure extensions,
-label strings, etc
+Configuration realated parameters.
+
+File locations, figure extensions, label strings, etc
 """
 import os
 
@@ -20,7 +21,7 @@ for d in [ASTECA_LOC, PHOT_LOC, TRACKS_LOC, MOCK_LOC, PDF_LOC]:
 
 
 def key2label(string, gyr=False):
-    """latex labels for different strings"""
+    """Latex labels for different strings."""
     def_fmt = r'$\rm{{{}}}$'
     convert = {'Av': r'$A_V$',
                'dmod': r'$\mu_0$',
@@ -41,6 +42,8 @@ def key2label(string, gyr=False):
 
 def cmd_limits(targ):
     """
+    CMD limits for plotting.
+
     zoom1_kw is the top right axis, HB
     zoom2_kw is the bottom right axis, MSTO
     xlim, ylim is the main axis.
